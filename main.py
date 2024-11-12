@@ -1,12 +1,24 @@
 import mlflow
 import os
 import hydra
-from omegaconf import DictConfig, OmegaConf
-
+from omegaconf import DictConfig, OmegaConf, ListConfig
 
 # This automatically reads in the configuration
+
 @hydra.main(config_name='config')
 def go(config: DictConfig):
+    print("Current working directory:", os.getcwd())  # Debug: Print the working directory
+    print("Configuration:", config)  # Debug: Print the entire config to ensure it's loaded correctly
+    print("Type of config['main']:", type(config["main"]))
+    print("Type of config['main']['execute_steps']:", type(config["main"]["execute_steps"]))
+    
+    # Adjust the assertion to handle both ListConfig and list
+    assert isinstance(config["main"]["execute_steps"], (list, ListConfig))
+    
+    execute_steps = list(config["main"]["execute_steps"])  # Convert to native list if needed
+    print("execute_steps:", execute_steps)  # Debug: Print the execute_steps to verify
+
+
 
     # Setup the wandb experiment. All runs will be grouped under this name
     os.environ["WANDB_PROJECT"] = config["main"]["project_name"]
@@ -15,12 +27,14 @@ def go(config: DictConfig):
     # You can get the path at the root of the MLflow project with this:
     root_path = hydra.utils.get_original_cwd()
 
+    
     # Check which steps we need to execute
     if isinstance(config["main"]["execute_steps"], str):
         # This was passed on the command line as a comma-separated list of steps
+        
         steps_to_execute = config["main"]["execute_steps"].split(",")
     else:
-        assert isinstance(config["main"]["execute_steps"], list)
+        assert isinstance(config["main"]["execute_steps"], (list, ListConfig))
         steps_to_execute = config["main"]["execute_steps"]
 
     # Download step

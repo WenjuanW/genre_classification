@@ -21,6 +21,7 @@ def go(args):
 
     df = pd.read_parquet(artifact_path)
 
+    
     # Drop the duplicates
     logger.info("Dropping duplicates")
     df = df.drop_duplicates().reset_index(drop=True)

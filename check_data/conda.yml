@@ -1,8 +1,9 @@
-name: download_data
+name: exercise_9
 channels:
   - conda-forge
   - defaults
 dependencies:
+  - python=3.10
   - pandas=2.2.1
   - pip=23.3.1
   - pytest=8.0.2
